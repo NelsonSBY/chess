@@ -140,7 +140,7 @@ Insight:
 **Visualisasi heatmap korelasi**
 ![Gambar Heatmap Korelasi](https://drive.google.com/uc?export=view&id=1aJK_I_E5mcZswURwhn9-sQVEkg5iJ7Tt)
 
-Heatmap ini menunjukkan hubungan linear antar fitur numerik dalam dataset, termasuk terhadap target klasifikasi_kemiskinan. Nilai korelasi berkisar antara -1 sampai 1:
+Heatmap ini menunjukkan hubungan linear antar fitur numerik dalam dataset, termasuk terhadap target kelas. Nilai korelasi berkisar antara -1 sampai 1:
 * 1 = hubungan positif sempurna
 * -1 = hubungan negatif sempurna
 * 0 = tidak ada hubungan linear
@@ -157,17 +157,22 @@ Heatmap ini menunjukkan hubungan linear antar fitur numerik dalam dataset, terma
 - Handling duplicate values: tidak ditemukan adanya duplicate values
 - Handling Outlier: dilakukan menggunakan teknik IQR Method untuk mengurangi pengaruh data ekstrem yang bisa memengaruhi akurasi model, terutama pada algoritma yang sensitif terhadap nilai outlier seperti Decision Tree dan Random Forest.
 - Label Encode untuk kolom kelas: karena kelas merupakan data kategorikal, sehingga perlu diubah menjadi representasi numerik biner agar dapat diproses oleh model.
+- Menghapus kolom provinsi, kab, jenis, status_blu, kepemilikan: Memfokuskan fitur numerik yang akan digunakan untuk melatih model
+- Memisahkan kolom x dan y: memisahkan fitur (X) dan target (y) guna menyiapkan data sebelum pelatihan model klasifikasi dilakukan
+- Split data train dan test dengan rasio 80:20: membagi data menjadi data latih dan data uji dengan rasio 80:20 untuk pelatihan dan evaluasi model.
 - Data scaling: menggunakan StandardScaler untuk menstandarkan skala fitur numerik sehingga memiliki distribusi mean 0 dan standard deviasi 1. Ini penting karena model tertentu sensitif terhadap perbedaan skala fitur.
-- Oversampling SMOTE pada data latih (train): untuk menangani ketidakseimbangan kelas (class imbalance), sehingga jumlah data pada kelas minoritas (label 1 = miskin) diseimbangkan dengan kelas mayoritas. Hal ini dapat meningkatkan sensitivitas model dalam mendeteksi kelas minoritas.
-- Data split: membagi data menjadi 80% untuk train dan 20% untuk test agar model dapat dilatih dan dievaluasi secara fair tanpa data leakage.
+- Oversampling SMOTE pada data latih (train): untuk menangani ketidakseimbangan kelas (class imbalance), sehingga jumlah data pada kelas minoritas diseimbangkan dengan kelas mayoritas. Hal ini dapat meningkatkan sensitivitas model dalam mendeteksi kelas minoritas.
 
 **Alasan**
 - Handling missing values diperiksa untuk memastikan tidak ada data kosong yang dapat mengganggu hasil model atau analisis.
 - Handling duplicate values diperiksa agar tidak ada duplikasi data yang bisa membuat bobot informasi menjadi tidak proporsional.
 - Handling Outlier (IQR Method) dilakukan untuk mengurangi pengaruh data ekstrem yang bisa mendistorsi parameter model, terutama untuk algoritma berbasis pohon (Decision Tree, Random Forest) yang cukup sensitif terhadap outlier. Dengan membersihkan outlier, model bisa lebih stabil dan akurat.
 - Label Encode untuk kolom kategorikal (kelas) Karena algoritma machine learning tidak dapat memproses data kategorikal dalam format string, maka perlu diubah menjadi format numerik biner agar bisa diproses dengan benar.
+- Menghapus beberapa kolom agar memudahkan dalam pengodingan untuk kolom y
+- Memisahkan kolom x(fitur) dan kolom y(label/target) dimana y hanya berisi kolom kelas yang terdiri dari kelas A, kelas B, kelas C, kelas D sedangkan x adalah fitur selain kelas
+- Split data traint dan test tentu dilakukan agar bisa melakukan proses pelatihan dan evaluasi model
 - Data Scaling (StandardScaler) penting untuk model-model seperti K-Nearest Neighbour dan algoritma berbasis jarak lainnya, di mana perbedaan skala antar fitur bisa menyebabkan fitur dengan rentang nilai lebih besar mendominasi hasil model.
-- Oversampling dengan SMOTE pada data latih dilakukan untuk menangani class imbalance yang bisa membuat model cenderung bias ke kelas mayoritas. Dengan menyeimbangkan jumlah data minoritas, model bisa lebih sensitif dalam mendeteksi kategori miskin. SMOTE hanya diterapkan ke data training, agar evaluasi di data testing tetap mencerminkan kondisi nyata dari distribusi data asli.
+- Oversampling dengan SMOTE pada data latih dilakukan untuk menangani class imbalance yang bisa membuat model cenderung bias ke kelas mayoritas. Dengan menyeimbangkan jumlah data minoritas, model bisa lebih sensitif dalam mendeteksi kategori kelas A. SMOTE hanya diterapkan ke data training, agar evaluasi di data testing tetap mencerminkan kondisi nyata dari distribusi data asli.
 
 
 ## Model Development
@@ -185,6 +190,9 @@ Cara kerja KNN dapat dijelaskan sebagai berikut:
 3. Menentukan K Tetangga Terdekat: Identifikasi K data pelatihan yang memiliki jarak paling dekat dengan data baru tersebut.
 
 4. Melakukan Klasifikasi: Dari K tetangga terdekat, hitung frekuensi kemunculan setiap label kelas. Kelas yang paling sering muncul di antara tetangga tersebut akan menjadi prediksi label untuk data baru.
+
+Parameter yang digunakan:
+- n_neighbors jumlah tetangga terdekat yang digunakan untuk menentukan kelas prediksi. Dalam proyek ini ditentukan sebanyak 5 tetangga.
 
 Kelebihan:
 - Mudah dipahami dan diimplementasikan.
@@ -208,6 +216,10 @@ Selanjutnya, saya menggunakan algoritma Decision Tree, yaitu metode pembelajaran
 
 Tujuan utama dari Decision Tree adalah membentuk rangkaian aturan keputusan secara bertahap dalam bentuk pernyataan "jika-maka" (if-then), yang dapat digunakan untuk mengklasifikasikan data baru atau memprediksi nilainya berdasarkan atribut yang dimilikinya.
 
+Parameter yang digunakan:
+- random_state digunakan untuk memastikan bahwa proses acak (seperti pemilihan subset data atau fitur saat membangun node) menghasilkan output yang konsisten setiap kali kode dijalankan; dalam proyek ini nilainya ditetapkan ke 42
+- max_depth membatasi kedalaman maksimum pohon dalam model untuk menghindari overfitting, dan pada proyek ini diatur hingga maksimum 3.
+
 Kelebihan:
 - Mudah dipahami dan divisualisasikan.
 - Dapat menangani data numerik maupun kategorikal tanpa perlu normalisasi.
@@ -222,6 +234,11 @@ Kekurangan:
 Terakhir, saya menggunakan algoritma Random Forest, sebuah metode supervised learning yang termasuk dalam kategori ensemble learning. Berbeda dengan pendekatan yang hanya mengandalkan satu model, Random Forest membangun sejumlah pohon keputusan (Decision Tree) secara independen. Setelah semua pohon terbentuk, hasil prediksi dari masing-masing pohon kemudian digabungkan untuk menghasilkan prediksi akhir.
 
 Konsep dasar dari Random Forest adalah bahwa gabungan dari banyak model sederhana (dalam hal ini, pohon keputusan yang relatif lemah) dapat membentuk sebuah model yang lebih kuat, stabil, dan akurat. Pendekatan ini membantu mengurangi risiko overfitting yang umum terjadi pada model Decision Tree tunggal.
+
+Parameter yang digunakan:
+- random_state digunakan untuk memastikan bahwa proses acak (seperti pemilihan subset data atau fitur saat membangun node) menghasilkan output yang konsisten setiap kali kode dijalankan; dalam proyek ini nilainya ditetapkan ke 42
+- max_depth membatasi kedalaman maksimum pohon dalam model untuk menghindari overfitting, dan pada proyek ini diatur hingga maksimum 3.
+
 
 Kelebihan:
 - Lebih stabil dan akurat dibanding single Decision Tree.
@@ -293,7 +310,7 @@ Insight Evaluasi Model
 * Random Forest memerlukan tuning lebih lanjut atau bisa digantikan, karena saat ini memiliki performa paling rendah.
 
 **Kesimpulan**
-1. Pemanfaatan Machine Learning untuk Prediksi Kemiskinan
+1. Pemanfaatan Machine Learning untuk Prediksi Kelas Rumah Sakit
   Model machine learning dapat dimanfaatkan secara efektif untuk Klasifikasi Kelas di Rumah Sakit berdasarkan variabel seperti total_tempat_tidur, total_layanan, total_tenaga_kerja . Hasil model menunjukkan adanya pola yang dapat digunakan untuk memisahkan kategori Kelas A,B,C,D.
 
 2. Algoritma Machine Learning yang Paling Efektif
