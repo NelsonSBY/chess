@@ -153,6 +153,8 @@ Heatmap ini menunjukkan hubungan linear antar fitur numerik dalam dataset, terma
 
 
 ## Data Preparation
+- Membuang kolom: id, nama, alamat tidak dibutuhkan untuk proses manapun
+- Penyaringan pada kolom kelas: hanya memili A, B, C, dan D
 - Handling missing values: tidak ditemukan adanya missing values
 - Handling duplicate values: tidak ditemukan adanya duplicate values
 - Handling Outlier: dilakukan menggunakan teknik IQR Method untuk mengurangi pengaruh data ekstrem yang bisa memengaruhi akurasi model, terutama pada algoritma yang sensitif terhadap nilai outlier seperti Decision Tree dan Random Forest.
@@ -164,8 +166,8 @@ Heatmap ini menunjukkan hubungan linear antar fitur numerik dalam dataset, terma
 - Oversampling SMOTE pada data latih (train): untuk menangani ketidakseimbangan kelas (class imbalance), sehingga jumlah data pada kelas minoritas diseimbangkan dengan kelas mayoritas. Hal ini dapat meningkatkan sensitivitas model dalam mendeteksi kelas minoritas.
 
 **Alasan**
-- Handling missing values diperiksa untuk memastikan tidak ada data kosong yang dapat mengganggu hasil model atau analisis.
-- Handling duplicate values diperiksa agar tidak ada duplikasi data yang bisa membuat bobot informasi menjadi tidak proporsional.
+- Kolom-kolom tersebut dibuang karena tidak memiliki kontribusi terhadap proses analisis atau pemodelan yang dilakukan
+- Penyaringan nilai pada kolom kelas dilakukan agar fokus pada Rumah Sakit dengan kategori utama dan menghindari data dengan representasi yang kecil atau tidak konsisten
 - Handling Outlier (IQR Method) dilakukan untuk mengurangi pengaruh data ekstrem yang bisa mendistorsi parameter model, terutama untuk algoritma berbasis pohon (Decision Tree, Random Forest) yang cukup sensitif terhadap outlier. Dengan membersihkan outlier, model bisa lebih stabil dan akurat.
 - Label Encode untuk kolom kategorikal (kelas) Karena algoritma machine learning tidak dapat memproses data kategorikal dalam format string, maka perlu diubah menjadi format numerik biner agar bisa diproses dengan benar.
 - Menghapus beberapa kolom agar memudahkan dalam pengodingan untuk kolom y
